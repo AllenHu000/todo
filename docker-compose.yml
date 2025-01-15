@@ -1,0 +1,42 @@
+services:
+  my-mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.mongodb:/data/db
+  my-backend:
+    image: my-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      no_cache: true
+    restart: always
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - my-mongo
+  my-frontend:
+    image: my-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      no_cache: true
+
+    # 这里把 frontend 目录做了个映射，以及暴露 3000 端口，都是为了在 vite 开发时实现代码热更新。
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - "3003:3003"
+  my-nginx:
+    image: my-nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+      no_cache: true
+    depends_on:
+      - my-mongo
+      - my-backend
+      - my-frontend
+    ports:
+      - "80:80"
