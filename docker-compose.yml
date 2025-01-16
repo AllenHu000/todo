@@ -5,6 +5,7 @@ services:
       - "27017:27017"
     volumes:
       - ./.mongodb:/data/db
+
   my-backend:
     image: my-backend
     build:
@@ -14,8 +15,11 @@ services:
     restart: always
     volumes:
       - ./backend:/backend
+    ports:
+      - "8080:8080"
     depends_on:
       - my-mongo
+
   my-frontend:
     image: my-frontend
     build:
@@ -28,6 +32,7 @@ services:
       - ./frontend:/frontend
     ports:
       - "3003:3003"
+
   my-nginx:
     image: my-nginx
     build:
